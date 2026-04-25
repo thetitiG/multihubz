@@ -1,0 +1,141 @@
+-- Script Hub Launcher GUI
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local lp = Players.LocalPlayer
+local gui = Instance.new("ScreenGui")
+gui.Name = "ScriptHub"
+gui.ResetOnSpawn = false
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+if syn then syn.protect_gui(gui) end
+gui.Parent = gethui and gethui() or lp:WaitForChild("PlayerGui")
+
+local scripts = {
+    {name = "Kawatan Hub", tag = "duel / pvp", url = "YOUR_KAWATAN_URL_HERE"},
+    {name = "Royal's Desync", tag = "packet hook", url = "YOUR_ROYALS_URL_HERE"},
+    {name = "Remote Seller", tag = "auto sell", url = "YOUR_SELLER_URL_HERE"},
+    {name = "Admin Panel", tag = "player tools", url = "YOUR_ADMIN_URL_HERE"},
+    {name = "Xen Hub", tag = "auto steal / auto tp", url = "YOUR_XENHUB_URL_HERE"},
+}
+
+-- Main Frame
+local main = Instance.new("Frame")
+main.Size = UDim2.new(0, 320, 0, 60 + (#scripts * 58))
+main.Position = UDim2.new(0.5, -160, 0.5, -140)
+main.BackgroundColor3 = Color3.fromRGB(13, 13, 20)
+main.BorderSizePixel = 0
+main.Parent = gui
+Instance.new("UICorner", main).CornerRadius = UDim.new(0, 10)
+Instance.new("UIStroke", main).Color = Color3.fromRGB(40, 36, 80)
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -20, 0, 38)
+title.Position = UDim2.new(0, 16, 0, 4)
+title.BackgroundTransparency = 1
+title.Text = "SCRIPT HUB"
+title.TextColor3 = Color3.fromRGB(200, 190, 255)
+title.TextSize = 16
+title.Font = Enum.Font.GothamBold
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = main
+
+-- Dragging
+local dragging, dragInput, dragStart, startPos
+main.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = main.Position
+    end
+end)
+main.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
+end)
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+-- Divider
+local div = Instance.new("Frame")
+div.Size = UDim2.new(1, -28, 0, 1)
+div.Position = UDim2.new(0, 14, 0, 44)
+div.BackgroundColor3 = Color3.fromRGB(30, 28, 55)
+div.BorderSizePixel = 0
+div.Parent = main
+
+-- Buttons
+for i, s in ipairs(scripts) do
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -20, 0, 46)
+    btn.Position = UDim2.new(0, 10, 0, 50 + (i-1)*52)
+    btn.BackgroundColor3 = Color3.fromRGB(18, 18, 42)
+    btn.BorderSizePixel = 0
+    btn.Text = ""
+    btn.Parent = main
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 7)
+    local stroke = Instance.new("UIStroke", btn)
+    stroke.Color = Color3.fromRGB(37, 37, 80)
+
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Size = UDim2.new(1, -80, 0, 24)
+    nameLabel.Position = UDim2.new(0, 12, 0, 5)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Text = s.name
+    nameLabel.TextColor3 = Color3.fromRGB(184, 176, 232)
+    nameLabel.TextSize = 14
+    nameLabel.Font = Enum.Font.GothamBold
+    nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+    nameLabel.Parent = btn
+
+    local tagLabel = Instance.new("TextLabel")
+    tagLabel.Size = UDim2.new(1, -80, 0, 16)
+    tagLabel.Position = UDim2.new(0, 12, 0, 26)
+    tagLabel.BackgroundTransparency = 1
+    tagLabel.Text = s.tag
+    tagLabel.TextColor3 = Color3.fromRGB(74, 68, 128)
+    tagLabel.TextSize = 11
+    tagLabel.Font = Enum.Font.Code
+    tagLabel.TextXAlignment = Enum.TextXAlignment.Left
+    tagLabel.Parent = btn
+
+    local loadBtn = Instance.new("TextButton")
+    loadBtn.Size = UDim2.new(0, 58, 0, 26)
+    loadBtn.Position = UDim2.new(1, -68, 0.5, -13)
+    loadBtn.BackgroundColor3 = Color3.fromRGB(15, 15, 34)
+    loadBtn.BorderSizePixel = 0
+    loadBtn.Text = "LOAD"
+    loadBtn.TextColor3 = Color3.fromRGB(91, 78, 224)
+    loadBtn.TextSize = 11
+    loadBtn.Font = Enum.Font.GothamBold
+    loadBtn.Parent = btn
+    Instance.new("UICorner", loadBtn).CornerRadius = UDim.new(0, 5)
+    Instance.new("UIStroke", loadBtn).Color = Color3.fromRGB(42, 36, 96)
+
+    local function execute()
+        loadBtn.Text = "..."
+        loadBtn.TextColor3 = Color3.fromRGB(139, 127, 240)
+        stroke.Color = Color3.fromRGB(91, 78, 224)
+        task.delay(0.8, function()
+            local ok, result = pcall(function()
+                return game:HttpGet(s.url)
+            end)
+            if ok and result then
+                loadstring(result)()
+                loadBtn.Text = "OK ✓"
+                loadBtn.TextColor3 = Color3.fromRGB(61, 220, 132)
+                stroke.Color = Color3.fromRGB(61, 220, 132)
+                nameLabel.TextColor3 = Color3.fromRGB(150, 220, 160)
+            else
+                loadBtn.Text = "ERR"
+                loadBtn.TextColor3 = Color3.fromRGB(220, 80, 80)
+                stroke.Color = Color3.fromRGB(200, 60, 60)
+            end
+        end)
+    end
+
+    btn.MouseButton1Click:Connect(execute)
+    loadBtn.MouseButton1Click:Connect(execute)
+end
