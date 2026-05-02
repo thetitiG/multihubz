@@ -3,24 +3,24 @@
 --         Kawatan Hub | Royal's Desync | Remote Seller
 --              Admin Panel | Xen Hub
 -- ============================================================
-
+ 
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local lp = Players.LocalPlayer
 local mouse = lp:GetMouse()
-
+ 
 local mainGui = Instance.new("ScreenGui")
 mainGui.Name = "ScriptHub"
 mainGui.ResetOnSpawn = false
 mainGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 if syn then pcall(function() syn.protect_gui(mainGui) end) end
 mainGui.Parent = gethui and gethui() or lp:WaitForChild("PlayerGui")
-
+ 
 -- ============================================================
 -- UTILITY FUNCTIONS
 -- ============================================================
-
+ 
 local function makeDraggable(frame, handle)
     local dragging, dragStart, startPos
     handle = handle or frame
@@ -41,14 +41,14 @@ local function makeDraggable(frame, handle)
         end
     end)
 end
-
+ 
 local function corner(parent, radius)
     local c = Instance.new("UICorner")
     c.CornerRadius = UDim.new(0, radius or 6)
     c.Parent = parent
     return c
 end
-
+ 
 local function stroke(parent, color, thickness)
     local s = Instance.new("UIStroke")
     s.Color = color or Color3.fromRGB(50,50,80)
@@ -56,7 +56,7 @@ local function stroke(parent, color, thickness)
     s.Parent = parent
     return s
 end
-
+ 
 local function label(parent, text, size, color, font, xalign)
     local l = Instance.new("TextLabel")
     l.BackgroundTransparency = 1
@@ -68,7 +68,7 @@ local function label(parent, text, size, color, font, xalign)
     l.Parent = parent
     return l
 end
-
+ 
 local function makeToggle(parent, pos, default, onToggle)
     local togBg = Instance.new("Frame")
     togBg.Size = UDim2.new(0, 44, 0, 22)
@@ -77,7 +77,7 @@ local function makeToggle(parent, pos, default, onToggle)
     togBg.BorderSizePixel = 0
     togBg.Parent = parent
     corner(togBg, 11)
-
+ 
     local knob = Instance.new("Frame")
     knob.Size = UDim2.new(0, 18, 0, 18)
     knob.Position = default and UDim2.new(0, 24, 0.5, -9) or UDim2.new(0, 2, 0.5, -9)
@@ -85,14 +85,14 @@ local function makeToggle(parent, pos, default, onToggle)
     knob.BorderSizePixel = 0
     knob.Parent = togBg
     corner(knob, 9)
-
+ 
     local state = default or false
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1,0,1,0)
     btn.BackgroundTransparency = 1
     btn.Text = ""
     btn.Parent = togBg
-
+ 
     btn.MouseButton1Click:Connect(function()
         state = not state
         local goal = state and {
@@ -106,10 +106,10 @@ local function makeToggle(parent, pos, default, onToggle)
         }):Play()
         if onToggle then onToggle(state) end
     end)
-
+ 
     return togBg
 end
-
+ 
 local function makeButton(parent, text, bgColor, textColor, size, pos)
     local btn = Instance.new("TextButton")
     btn.Size = size or UDim2.new(0, 80, 0, 28)
@@ -130,7 +130,7 @@ local function makeButton(parent, text, bgColor, textColor, size, pos)
     end)
     return btn
 end
-
+ 
 local function makeRow(parent, yOffset, labelText, isToggle, default, onToggle)
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1, -16, 0, 36)
@@ -139,53 +139,54 @@ local function makeRow(parent, yOffset, labelText, isToggle, default, onToggle)
     row.BorderSizePixel = 0
     row.Parent = parent
     corner(row, 6)
-
+ 
     local lbl = label(row, labelText, 13, Color3.fromRGB(200,195,230), Enum.Font.Gotham)
     lbl.Size = UDim2.new(1, -60, 1, 0)
     lbl.Position = UDim2.new(0, 10, 0, 0)
-
+ 
     if isToggle then
         makeToggle(row, UDim2.new(1, -50, 0.5, -11), default or false, onToggle)
     end
     return row
 end
-
+ 
 -- ============================================================
 -- LAUNCHER HUB
 -- ============================================================
-
+ 
 local launcherFrame = Instance.new("Frame")
-launcherFrame.Size = UDim2.new(0, 300, 0, 380)
+launcherFrame.Size = UDim2.new(0, 300, 0, 440)
 launcherFrame.Position = UDim2.new(0.5, -150, 0.5, -190)
 launcherFrame.BackgroundColor3 = Color3.fromRGB(11, 11, 20)
 launcherFrame.BorderSizePixel = 0
 launcherFrame.Parent = mainGui
 corner(launcherFrame, 10)
 stroke(launcherFrame, Color3.fromRGB(38, 34, 80), 1)
-
+ 
 local launcherHeader = Instance.new("Frame")
 launcherHeader.Size = UDim2.new(1, 0, 0, 42)
 launcherHeader.BackgroundColor3 = Color3.fromRGB(18, 15, 40)
 launcherHeader.BorderSizePixel = 0
 launcherHeader.Parent = launcherFrame
 corner(launcherHeader, 10)
-
+ 
 local launcherTitle = label(launcherHeader, "  SCRIPT HUB", 15, Color3.fromRGB(190, 180, 255), Enum.Font.GothamBold)
 launcherTitle.Size = UDim2.new(1, 0, 1, 0)
 launcherTitle.Position = UDim2.new(0, 0, 0, 0)
-
+ 
 makeDraggable(launcherFrame, launcherHeader)
-
+ 
 local hubs = {
     {name="Kawatan Hub",  tag="duel / pvp",           color=Color3.fromRGB(124,58,237)},
     {name="Royal's Desync", tag="packet hook",        color=Color3.fromRGB(168,85,247)},
     {name="Remote Seller",  tag="auto sell",          color=Color3.fromRGB(14,165,233)},
     {name="Admin Panel",    tag="player tools",       color=Color3.fromRGB(16,185,129)},
     {name="Xen Hub",        tag="auto steal / auto tp", color=Color3.fromRGB(245,158,11)},
+    {name="Trade Freeze",   tag="freeze / auto accept / add brainrot", color=Color3.fromRGB(200,40,60)},
 }
-
+ 
 local allGuis = {}
-
+ 
 for i, h in ipairs(hubs) do
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1, -16, 0, 52)
@@ -195,7 +196,7 @@ for i, h in ipairs(hubs) do
     row.Parent = launcherFrame
     corner(row, 8)
     stroke(row, Color3.fromRGB(35,32,70), 1)
-
+ 
     local colorBar = Instance.new("Frame")
     colorBar.Size = UDim2.new(0, 4, 1, -12)
     colorBar.Position = UDim2.new(0, 6, 0, 6)
@@ -203,30 +204,30 @@ for i, h in ipairs(hubs) do
     colorBar.BorderSizePixel = 0
     colorBar.Parent = row
     corner(colorBar, 2)
-
+ 
     local nameL = label(row, h.name, 13, Color3.fromRGB(200,195,235), Enum.Font.GothamBold)
     nameL.Size = UDim2.new(1,-120,0,20)
     nameL.Position = UDim2.new(0,18,0,7)
-
+ 
     local tagL = label(row, h.tag, 10, Color3.fromRGB(90,85,140), Enum.Font.Code)
     tagL.Size = UDim2.new(1,-120,0,14)
     tagL.Position = UDim2.new(0,18,0,28)
-
+ 
     local openBtn = makeButton(row, "OPEN", h.color, Color3.fromRGB(255,255,255), UDim2.new(0,60,0,26), UDim2.new(1,-68,0.5,-13))
-
+ 
     openBtn.MouseButton1Click:Connect(function()
         if allGuis[h.name] then
             allGuis[h.name].Visible = not allGuis[h.name].Visible
         end
     end)
-
+ 
     allGuis[h.name] = nil
 end
-
+ 
 -- ============================================================
 -- 1) KAWATAN HUB (Duel/PVP)
 -- ============================================================
-
+ 
 local kawFrame = Instance.new("Frame")
 kawFrame.Size = UDim2.new(0, 340, 0, 340)
 kawFrame.Position = UDim2.new(0.5, 20, 0.5, -170)
@@ -237,18 +238,18 @@ kawFrame.Parent = mainGui
 corner(kawFrame, 10)
 stroke(kawFrame, Color3.fromRGB(40,38,90), 1)
 allGuis["Kawatan Hub"] = kawFrame
-
+ 
 local kawHeader = Instance.new("Frame")
 kawHeader.Size = UDim2.new(1,0,0,46)
 kawHeader.BackgroundColor3 = Color3.fromRGB(20,16,45)
 kawHeader.BorderSizePixel = 0
 kawHeader.Parent = kawFrame
 corner(kawHeader, 10)
-
+ 
 local kawTitle = label(kawHeader, "Kawatan Hub", 14, Color3.fromRGB(140,200,255), Enum.Font.GothamBold)
 kawTitle.Size = UDim2.new(0,150,1,0)
 kawTitle.Position = UDim2.new(0,12,0,0)
-
+ 
 local kawStats = Instance.new("Frame")
 kawStats.Size = UDim2.new(0,200,0,26)
 kawStats.Position = UDim2.new(1,-210,0.5,-13)
@@ -257,17 +258,17 @@ kawStats.BorderSizePixel = 0
 kawStats.Parent = kawHeader
 corner(kawStats, 13)
 stroke(kawStats, Color3.fromRGB(50,50,100), 1)
-
+ 
 local kawStatsTxt = label(kawStats, "FPS 60  |  PING 0ms", 11, Color3.fromRGB(80,220,120), Enum.Font.Code)
 kawStatsTxt.Size = UDim2.new(1,0,1,0)
 kawStatsTxt.Position = UDim2.new(0,0,0,0)
 kawStatsTxt.TextXAlignment = Enum.TextXAlignment.Center
-
+ 
 makeDraggable(kawFrame, kawHeader)
-
+ 
 local kawClose = makeButton(kawHeader, "✕", Color3.fromRGB(180,40,40), Color3.fromRGB(255,255,255), UDim2.new(0,26,0,26), UDim2.new(1,-32,0.5,-13))
 kawClose.MouseButton1Click:Connect(function() kawFrame.Visible = false end)
-
+ 
 local kawScroll = Instance.new("ScrollingFrame")
 kawScroll.Size = UDim2.new(1,-8,1,-54)
 kawScroll.Position = UDim2.new(0,4,0,50)
@@ -277,7 +278,7 @@ kawScroll.ScrollBarThickness = 3
 kawScroll.ScrollBarImageColor3 = Color3.fromRGB(100,80,200)
 kawScroll.CanvasSize = UDim2.new(0,0,0,300)
 kawScroll.Parent = kawFrame
-
+ 
 local kawItems = {
     {name="Auto Grab", state=false},
     {name="Hit Circle", state=false},
@@ -286,15 +287,15 @@ local kawItems = {
     {name="Auto Steal", state=false},
     {name="Auto Dodge", state=false},
 }
-
+ 
 for i, item in ipairs(kawItems) do
     makeRow(kawScroll, (i-1)*42, item.name, true, item.state)
 end
-
+ 
 -- ============================================================
 -- 2) ROYAL'S DESYNC
 -- ============================================================
-
+ 
 local royFrame = Instance.new("Frame")
 royFrame.Size = UDim2.new(0, 300, 0, 160)
 royFrame.Position = UDim2.new(0.5, -380, 0.5, -80)
@@ -305,7 +306,7 @@ royFrame.Parent = mainGui
 corner(royFrame, 10)
 stroke(royFrame, Color3.fromRGB(60,40,100), 1)
 allGuis["Royal's Desync"] = royFrame
-
+ 
 local royHeader = Instance.new("Frame")
 royHeader.Size = UDim2.new(1,0,0,40)
 royHeader.BackgroundColor3 = Color3.fromRGB(20,14,40)
@@ -313,21 +314,21 @@ royHeader.BorderSizePixel = 0
 royHeader.Parent = royFrame
 corner(royHeader, 10)
 makeDraggable(royFrame, royHeader)
-
+ 
 local royIcon = label(royHeader, "👑", 16, Color3.fromRGB(255,215,0), Enum.Font.GothamBold)
 royIcon.Size = UDim2.new(0,30,1,0)
 royIcon.Position = UDim2.new(0,8,0,0)
 royIcon.TextXAlignment = Enum.TextXAlignment.Center
-
+ 
 local royTitle = label(royHeader, "Royal's Desync V1.2", 13, Color3.fromRGB(200,180,255), Enum.Font.GothamBold)
 royTitle.Size = UDim2.new(0,180,1,0)
 royTitle.Position = UDim2.new(0,36,0,0)
-
+ 
 local royClose = makeButton(royHeader, "✕", Color3.fromRGB(50,50,80), Color3.fromRGB(255,255,255), UDim2.new(0,24,0,24), UDim2.new(1,-30,0.5,-12))
 royClose.MouseButton1Click:Connect(function() royFrame.Visible = false end)
-
+ 
 local royMin = makeButton(royHeader, "—", Color3.fromRGB(50,50,80), Color3.fromRGB(255,255,255), UDim2.new(0,24,0,24), UDim2.new(1,-60,0.5,-12))
-
+ 
 -- Status pill
 local royStatus = Instance.new("Frame")
 royStatus.Size = UDim2.new(1,-16,0,32)
@@ -337,7 +338,7 @@ royStatus.BorderSizePixel = 0
 royStatus.Parent = royFrame
 corner(royStatus, 8)
 stroke(royStatus, Color3.fromRGB(30,80,50), 1)
-
+ 
 local royDot = Instance.new("Frame")
 royDot.Size = UDim2.new(0,10,0,10)
 royDot.Position = UDim2.new(0,10,0.5,-5)
@@ -345,24 +346,24 @@ royDot.BackgroundColor3 = Color3.fromRGB(50,220,100)
 royDot.BorderSizePixel = 0
 royDot.Parent = royStatus
 corner(royDot, 5)
-
+ 
 local royStatusTxt = label(royStatus, "Hook active — packets intercepted", 12, Color3.fromRGB(60,200,100), Enum.Font.Code)
 royStatusTxt.Size = UDim2.new(1,-28,1,0)
 royStatusTxt.Position = UDim2.new(0,26,0,0)
-
+ 
 -- Unwalk toggle row
 local royUnwalkRow = makeRow(royFrame, 90, "Unwalk", true, true)
 royUnwalkRow.Size = UDim2.new(1,-16,0,42)
 royUnwalkRow.BackgroundColor3 = Color3.fromRGB(18,16,35)
-
+ 
 local roySubLabel = label(royUnwalkRow, "Freeze animation tricks", 10, Color3.fromRGB(70,65,110), Enum.Font.Code)
 roySubLabel.Size = UDim2.new(1,-60,0,12)
 roySubLabel.Position = UDim2.new(0,10,0,24)
-
+ 
 -- ============================================================
 -- 3) REMOTE SELLER
 -- ============================================================
-
+ 
 local selFrame = Instance.new("Frame")
 selFrame.Size = UDim2.new(0, 280, 0, 420)
 selFrame.Position = UDim2.new(0.5, -420, 0.5, -200)
@@ -373,7 +374,7 @@ selFrame.Parent = mainGui
 corner(selFrame, 8)
 stroke(selFrame, Color3.fromRGB(0,120,160), 1)
 allGuis["Remote Seller"] = selFrame
-
+ 
 local selHeader = Instance.new("Frame")
 selHeader.Size = UDim2.new(1,0,0,40)
 selHeader.BackgroundColor3 = Color3.fromRGB(10,30,45)
@@ -381,7 +382,7 @@ selHeader.BorderSizePixel = 0
 selHeader.Parent = selFrame
 corner(selHeader, 8)
 makeDraggable(selFrame, selHeader)
-
+ 
 local selDot = Instance.new("Frame")
 selDot.Size = UDim2.new(0,10,0,10)
 selDot.Position = UDim2.new(0,10,0.5,-5)
@@ -389,18 +390,18 @@ selDot.BackgroundColor3 = Color3.fromRGB(0,200,200)
 selDot.BorderSizePixel = 0
 selDot.Parent = selHeader
 corner(selDot, 5)
-
+ 
 local selTitle = label(selHeader, "ZAWA'S REMOTE SELL", 13, Color3.fromRGB(0,220,240), Enum.Font.GothamBold)
 selTitle.Size = UDim2.new(1,-60,1,0)
 selTitle.Position = UDim2.new(0,28,0,0)
-
+ 
 local selClose = makeButton(selHeader, "✕", Color3.fromRGB(20,60,80), Color3.fromRGB(0,220,240), UDim2.new(0,26,0,26), UDim2.new(1,-32,0.5,-13))
 selClose.MouseButton1Click:Connect(function() selFrame.Visible = false end)
-
+ 
 local selCount = label(selFrame, "22 brainrot(s) ready to sell", 11, Color3.fromRGB(100,160,180), Enum.Font.Code)
 selCount.Size = UDim2.new(1,-16,0,20)
 selCount.Position = UDim2.new(0,8,0,46)
-
+ 
 local selScroll = Instance.new("ScrollingFrame")
 selScroll.Size = UDim2.new(1,-8,1,-76)
 selScroll.Position = UDim2.new(0,4,0,72)
@@ -410,9 +411,9 @@ selScroll.ScrollBarThickness = 3
 selScroll.ScrollBarImageColor3 = Color3.fromRGB(0,160,200)
 selScroll.CanvasSize = UDim2.new(0,0,0,420)
 selScroll.Parent = selFrame
-
+ 
 local prices = {"$2K","$2.5K","$8.75K","$1K","$3.75K","$13","$3.25K","$900","$5K"}
-
+ 
 for i, price in ipairs(prices) do
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1,-8,0,44)
@@ -422,7 +423,7 @@ for i, price in ipairs(prices) do
     row.Parent = selScroll
     corner(row, 6)
     stroke(row, Color3.fromRGB(0,80,110), 1)
-
+ 
     local numBadge = Instance.new("Frame")
     numBadge.Size = UDim2.new(0,28,0,28)
     numBadge.Position = UDim2.new(0,6,0.5,-14)
@@ -430,16 +431,16 @@ for i, price in ipairs(prices) do
     numBadge.BorderSizePixel = 0
     numBadge.Parent = row
     corner(numBadge, 4)
-
+ 
     local numL = label(numBadge, tostring(i), 13, Color3.fromRGB(200,240,255), Enum.Font.GothamBold)
     numL.Size = UDim2.new(1,0,1,0)
     numL.Position = UDim2.new(0,0,0,0)
     numL.TextXAlignment = Enum.TextXAlignment.Center
-
+ 
     local priceL = label(row, "Sell: "..price, 13, Color3.fromRGB(160,200,220), Enum.Font.Gotham)
     priceL.Size = UDim2.new(1,-120,1,0)
     priceL.Position = UDim2.new(0,42,0,0)
-
+ 
     local sellBtn = makeButton(row, "SELL", Color3.fromRGB(0,160,200), Color3.fromRGB(255,255,255), UDim2.new(0,64,0,28), UDim2.new(1,-72,0.5,-14))
     sellBtn.MouseButton1Click:Connect(function()
         sellBtn.Text = "SOLD!"
@@ -450,16 +451,16 @@ for i, price in ipairs(prices) do
         end)
     end)
 end
-
+ 
 local selCredit = label(selFrame, "made by @zawaskyee", 10, Color3.fromRGB(50,100,130), Enum.Font.Code)
 selCredit.Size = UDim2.new(1,0,0,16)
 selCredit.Position = UDim2.new(0,0,1,-18)
 selCredit.TextXAlignment = Enum.TextXAlignment.Center
-
+ 
 -- ============================================================
 -- 4) ADMIN PANEL
 -- ============================================================
-
+ 
 local admFrame = Instance.new("Frame")
 admFrame.Size = UDim2.new(0, 320, 0, 420)
 admFrame.Position = UDim2.new(0.5, 30, 0.5, -210)
@@ -470,7 +471,7 @@ admFrame.Parent = mainGui
 corner(admFrame, 10)
 stroke(admFrame, Color3.fromRGB(40,40,70), 1)
 allGuis["Admin Panel"] = admFrame
-
+ 
 local admHeader = Instance.new("Frame")
 admHeader.Size = UDim2.new(1,0,0,50)
 admHeader.BackgroundColor3 = Color3.fromRGB(16,16,28)
@@ -478,15 +479,15 @@ admHeader.BorderSizePixel = 0
 admHeader.Parent = admFrame
 corner(admHeader, 10)
 makeDraggable(admFrame, admHeader)
-
+ 
 local admTitle = label(admHeader, "Admin Panel", 16, Color3.fromRGB(240,240,255), Enum.Font.GothamBold)
 admTitle.Size = UDim2.new(0.6,0,0,24)
 admTitle.Position = UDim2.new(0,12,0,6)
-
+ 
 local admSub = label(admHeader, "Player list", 11, Color3.fromRGB(100,95,150), Enum.Font.Gotham)
 admSub.Size = UDim2.new(0.6,0,0,16)
 admSub.Position = UDim2.new(0,12,0,28)
-
+ 
 -- FPS Wait badge
 local fpsWait = Instance.new("Frame")
 fpsWait.Size = UDim2.new(0,80,0,34)
@@ -495,12 +496,12 @@ fpsWait.BackgroundColor3 = Color3.fromRGB(240,150,170)
 fpsWait.BorderSizePixel = 0
 fpsWait.Parent = admHeader
 corner(fpsWait, 6)
-
+ 
 local fpsLabel = label(fpsWait, "FPS Wait:", 10, Color3.fromRGB(80,20,30), Enum.Font.GothamBold)
 fpsLabel.Size = UDim2.new(1,0,0,14)
 fpsLabel.Position = UDim2.new(0,0,0,4)
 fpsLabel.TextXAlignment = Enum.TextXAlignment.Center
-
+ 
 local fpsSlider = Instance.new("Frame")
 fpsSlider.Size = UDim2.new(0.7,0,0,8)
 fpsSlider.Position = UDim2.new(0.15,0,0,20)
@@ -508,7 +509,7 @@ fpsSlider.BackgroundColor3 = Color3.fromRGB(180,80,100)
 fpsSlider.BorderSizePixel = 0
 fpsSlider.Parent = fpsWait
 corner(fpsSlider, 4)
-
+ 
 local fpsKnob = Instance.new("Frame")
 fpsKnob.Size = UDim2.new(0,12,0,12)
 fpsKnob.Position = UDim2.new(0.4,0,0.5,-6)
@@ -516,20 +517,20 @@ fpsKnob.BackgroundColor3 = Color3.fromRGB(255,255,255)
 fpsKnob.BorderSizePixel = 0
 fpsKnob.Parent = fpsSlider
 corner(fpsKnob, 6)
-
+ 
 -- Action buttons
 local admBtnRow = Instance.new("Frame")
 admBtnRow.Size = UDim2.new(1,-16,0,32)
 admBtnRow.Position = UDim2.new(0,8,0,58)
 admBtnRow.BackgroundTransparency = 1
 admBtnRow.Parent = admFrame
-
+ 
 local admBtns = {
     {text="Prox", color=Color3.fromRGB(40,40,65)},
     {text="Spam Owner", color=Color3.fromRGB(40,40,65)},
     {text="Click AP", color=Color3.fromRGB(40,40,65), active=true},
 }
-
+ 
 for i, ab in ipairs(admBtns) do
     local abBtn = makeButton(admBtnRow, ab.text, ab.active and Color3.fromRGB(0,120,220) or ab.color, Color3.fromRGB(200,200,255), UDim2.new(0,84,0,28), UDim2.new(0,(i-1)*92,0,0))
     if ab.active then
@@ -550,7 +551,7 @@ for i, ab in ipairs(admBtns) do
         corner(sliderKnob, 9)
     end
 end
-
+ 
 -- Tabs
 local admTabRow = Instance.new("Frame")
 admTabRow.Size = UDim2.new(1,-16,0,32)
@@ -559,11 +560,11 @@ admTabRow.BackgroundColor3 = Color3.fromRGB(20,20,36)
 admTabRow.BorderSizePixel = 0
 admTabRow.Parent = admFrame
 corner(admTabRow, 8)
-
+ 
 local tabPlayers = makeButton(admTabRow, "PLAYERS", Color3.fromRGB(0,160,255), Color3.fromRGB(255,255,255), UDim2.new(0.5,-4,0,26), UDim2.new(0,3,0,3))
 local tabBlacklist = makeButton(admTabRow, "BLACKLIST", Color3.fromRGB(20,20,36), Color3.fromRGB(120,115,160), UDim2.new(0.5,-4,0,26), UDim2.new(0.5,1,0,3))
 corner(tabPlayers, 6) corner(tabBlacklist, 6)
-
+ 
 -- Player list
 local admScroll = Instance.new("ScrollingFrame")
 admScroll.Size = UDim2.new(1,-8,1,-145)
@@ -573,7 +574,7 @@ admScroll.BorderSizePixel = 0
 admScroll.ScrollBarThickness = 3
 admScroll.ScrollBarImageColor3 = Color3.fromRGB(60,80,160)
 admScroll.Parent = admFrame
-
+ 
 local function getPlayers()
     local list = {}
     for _, p in ipairs(Players:GetPlayers()) do
@@ -589,12 +590,12 @@ local function getPlayers()
     end
     return list
 end
-
+ 
 local function renderPlayers()
     admScroll:ClearAllChildren()
     local playerList = getPlayers()
     admScroll.CanvasSize = UDim2.new(0,0,0,#playerList*72+8)
-
+ 
     for i, pl in ipairs(playerList) do
         local card = Instance.new("Frame")
         card.Size = UDim2.new(1,-8,0,62)
@@ -604,7 +605,7 @@ local function renderPlayers()
         card.Parent = admScroll
         corner(card, 8)
         stroke(card, Color3.fromRGB(35,35,60), 1)
-
+ 
         -- Avatar circle
         local av = Instance.new("Frame")
         av.Size = UDim2.new(0,40,0,40)
@@ -613,20 +614,20 @@ local function renderPlayers()
         av.BorderSizePixel = 0
         av.Parent = card
         corner(av, 20)
-
+ 
         local avL = label(av, string.sub(pl.name,1,2):upper(), 13, Color3.fromRGB(220,215,255), Enum.Font.GothamBold)
         avL.Size = UDim2.new(1,0,1,0)
         avL.Position = UDim2.new(0,0,0,0)
         avL.TextXAlignment = Enum.TextXAlignment.Center
-
+ 
         local nameL = label(card, pl.name, 13, Color3.fromRGB(220,215,255), Enum.Font.GothamBold)
         nameL.Size = UDim2.new(0.5,0,0,18)
         nameL.Position = UDim2.new(0,56,0,10)
-
+ 
         local userL = label(card, pl.user, 10, Color3.fromRGB(80,75,130), Enum.Font.Code)
         userL.Size = UDim2.new(0.5,0,0,14)
         userL.Position = UDim2.new(0,56,0,28)
-
+ 
         -- Action icons row
         local icons = {"🚀","🏃","🔗","🎯"}
         for j, ico in ipairs(icons) do
@@ -641,18 +642,18 @@ local function renderPlayers()
             iconBtn.Parent = card
             corner(iconBtn, 5)
         end
-
+ 
         local tpBtn = makeButton(card, "TP", Color3.fromRGB(0,160,80), Color3.fromRGB(255,255,255), UDim2.new(0,32,0,26), UDim2.new(1,-60,0.5,-13))
         local killBtn = makeButton(card, "✕", Color3.fromRGB(200,40,40), Color3.fromRGB(255,255,255), UDim2.new(0,24,0,26), UDim2.new(1,-26,0.5,-13))
     end
 end
-
+ 
 renderPlayers()
-
+ 
 -- ============================================================
 -- 5) XEN HUB
 -- ============================================================
-
+ 
 local xenFrame = Instance.new("Frame")
 xenFrame.Size = UDim2.new(0, 320, 0, 480)
 xenFrame.Position = UDim2.new(0.5, -160, 0.5, -240)
@@ -663,7 +664,7 @@ xenFrame.Parent = mainGui
 corner(xenFrame, 10)
 stroke(xenFrame, Color3.fromRGB(50,35,100), 1)
 allGuis["Xen Hub"] = xenFrame
-
+ 
 local xenHeader = Instance.new("Frame")
 xenHeader.Size = UDim2.new(1,0,0,44)
 xenHeader.BackgroundColor3 = Color3.fromRGB(18,14,38)
@@ -671,14 +672,14 @@ xenHeader.BorderSizePixel = 0
 xenHeader.Parent = xenFrame
 corner(xenHeader, 10)
 makeDraggable(xenFrame, xenHeader)
-
+ 
 local xenTitle = label(xenHeader, "XENHUB V5", 15, Color3.fromRGB(255,255,255), Enum.Font.GothamBold)
 xenTitle.Size = UDim2.new(0.6,0,1,0)
 xenTitle.Position = UDim2.new(0,12,0,0)
-
+ 
 local xenClose = makeButton(xenHeader, "✕", Color3.fromRGB(160,30,30), Color3.fromRGB(255,255,255), UDim2.new(0,26,0,26), UDim2.new(1,-32,0.5,-13))
 xenClose.MouseButton1Click:Connect(function() xenFrame.Visible = false end)
-
+ 
 -- Tab bar
 local xenTabs = {"Keybinds","Auto TP","ESP","UI","Misc","Priority","Performance"}
 local xenTabBar = Instance.new("Frame")
@@ -687,10 +688,10 @@ xenTabBar.Position = UDim2.new(0,0,0,44)
 xenTabBar.BackgroundColor3 = Color3.fromRGB(16,12,32)
 xenTabBar.BorderSizePixel = 0
 xenTabBar.Parent = xenFrame
-
+ 
 local tabWidth = 320 / #xenTabs
 local activeXenTab = "ESP"
-
+ 
 local xenTabBtns = {}
 for i, tabName in ipairs(xenTabs) do
     local tb = Instance.new("TextButton")
@@ -706,7 +707,7 @@ for i, tabName in ipairs(xenTabs) do
     corner(tb, 0)
     xenTabBtns[tabName] = tb
 end
-
+ 
 -- ESP tab content (shown by default)
 local xenScroll = Instance.new("ScrollingFrame")
 xenScroll.Size = UDim2.new(1,-8,1,-84)
@@ -717,7 +718,7 @@ xenScroll.ScrollBarThickness = 3
 xenScroll.ScrollBarImageColor3 = Color3.fromRGB(80,60,200)
 xenScroll.CanvasSize = UDim2.new(0,0,0,500)
 xenScroll.Parent = xenFrame
-
+ 
 local xenOptions = {
     {name="Line to Base",               default=true},
     {name="Highest Value Beam",         default=true},
@@ -731,7 +732,7 @@ local xenOptions = {
     {name="Exclude Nebula Users From AP", default=false},
     {name="Exclude Kawaifu Users From AP",default=false},
 }
-
+ 
 for i, opt in ipairs(xenOptions) do
     local row = Instance.new("Frame")
     row.Size = UDim2.new(1,-8,0,40)
@@ -739,7 +740,7 @@ for i, opt in ipairs(xenOptions) do
     row.BackgroundTransparency = 1
     row.BorderSizePixel = 0
     row.Parent = xenScroll
-
+ 
     -- Divider line
     local divLine = Instance.new("Frame")
     divLine.Size = UDim2.new(1,0,0,1)
@@ -747,14 +748,150 @@ for i, opt in ipairs(xenOptions) do
     divLine.BackgroundColor3 = Color3.fromRGB(30,25,55)
     divLine.BorderSizePixel = 0
     divLine.Parent = row
-
+ 
     local optLabel = label(row, opt.name, 13, Color3.fromRGB(200,195,230), Enum.Font.Gotham)
     optLabel.Size = UDim2.new(1,-60,1,0)
     optLabel.Position = UDim2.new(0,8,0,0)
-
+ 
     makeToggle(row, UDim2.new(1,-50,0.5,-11), opt.default)
 end
-
+ 
+-- ============================================================
+-- 6) TRADE FREEZE (MakuScripts style)
+-- ============================================================
+ 
+local tfFrame = Instance.new("Frame")
+tfFrame.Size = UDim2.new(0, 340, 0, 320)
+tfFrame.Position = UDim2.new(0.5, -170, 0.5, -160)
+tfFrame.BackgroundColor3 = Color3.fromRGB(10, 8, 8)
+tfFrame.BorderSizePixel = 0
+tfFrame.Visible = false
+tfFrame.Parent = mainGui
+corner(tfFrame, 14)
+stroke(tfFrame, Color3.fromRGB(120, 30, 40), 1)
+allGuis["Trade Freeze"] = tfFrame
+ 
+-- Header
+local tfHeader = Instance.new("Frame")
+tfHeader.Size = UDim2.new(1, 0, 0, 70)
+tfHeader.BackgroundColor3 = Color3.fromRGB(12, 10, 10)
+tfHeader.BorderSizePixel = 0
+tfHeader.Parent = tfFrame
+corner(tfHeader, 14)
+makeDraggable(tfFrame, tfHeader)
+ 
+-- M logo badge
+local tfBadge = Instance.new("Frame")
+tfBadge.Size = UDim2.new(0, 46, 0, 46)
+tfBadge.Position = UDim2.new(0, 10, 0.5, -23)
+tfBadge.BackgroundColor3 = Color3.fromRGB(180, 30, 40)
+tfBadge.BorderSizePixel = 0
+tfBadge.Parent = tfHeader
+corner(tfBadge, 10)
+ 
+local tfBadgeLetter = label(tfBadge, "M", 22, Color3.fromRGB(255, 255, 255), Enum.Font.GothamBold)
+tfBadgeLetter.Size = UDim2.new(1, 0, 1, 0)
+tfBadgeLetter.Position = UDim2.new(0, 0, 0, 0)
+tfBadgeLetter.TextXAlignment = Enum.TextXAlignment.Center
+ 
+local tfTitle = label(tfHeader, "Trade Freeze Universal", 14, Color3.fromRGB(220, 60, 80), Enum.Font.GothamBold)
+tfTitle.Size = UDim2.new(1, -120, 0, 22)
+tfTitle.Position = UDim2.new(0, 64, 0, 14)
+ 
+local tfCredit = label(tfHeader, "Made By MakuScripts", 11, Color3.fromRGB(220, 60, 80), Enum.Font.Gotham)
+tfCredit.Size = UDim2.new(1, -120, 0, 16)
+tfCredit.Position = UDim2.new(0, 64, 0, 36)
+ 
+-- Minimize button
+local tfMin = makeButton(tfHeader, "—", Color3.fromRGB(160, 30, 40), Color3.fromRGB(255, 255, 255), UDim2.new(0, 32, 0, 32), UDim2.new(1, -42, 0.5, -16))
+tfMin.MouseButton1Click:Connect(function() tfFrame.Visible = false end)
+ 
+-- Feature rows with red icon badges
+local tfFeatures = {
+    {name="Freeze Trade",   icon="❄",  iconBg=Color3.fromRGB(160,30,40)},
+    {name="Auto Accept",    icon="✓",  iconBg=Color3.fromRGB(160,30,40)},
+    {name="Add Brainrot",   icon="▢",  iconBg=Color3.fromRGB(160,30,40)},
+}
+ 
+local tfStates = {false, false, false}
+ 
+for i, feat in ipairs(tfFeatures) do
+    local row = Instance.new("Frame")
+    row.Size = UDim2.new(1, -16, 0, 64)
+    row.Position = UDim2.new(0, 8, 0, 72 + (i-1)*72)
+    row.BackgroundColor3 = Color3.fromRGB(16, 12, 12)
+    row.BorderSizePixel = 0
+    row.Parent = tfFrame
+    corner(row, 12)
+    stroke(row, Color3.fromRGB(80, 25, 30), 1)
+ 
+    -- Icon badge
+    local iconBg = Instance.new("Frame")
+    iconBg.Size = UDim2.new(0, 46, 0, 46)
+    iconBg.Position = UDim2.new(0, 8, 0.5, -23)
+    iconBg.BackgroundColor3 = feat.iconBg
+    iconBg.BorderSizePixel = 0
+    iconBg.Parent = row
+    corner(iconBg, 10)
+ 
+    local iconL = label(iconBg, feat.icon, 20, Color3.fromRGB(255, 255, 255), Enum.Font.GothamBold)
+    iconL.Size = UDim2.new(1, 0, 1, 0)
+    iconL.Position = UDim2.new(0, 0, 0, 0)
+    iconL.TextXAlignment = Enum.TextXAlignment.Center
+ 
+    local featName = label(row, feat.name, 15, Color3.fromRGB(240, 235, 235), Enum.Font.GothamBold)
+    featName.Size = UDim2.new(1, -120, 0, 20)
+    featName.Position = UDim2.new(0, 62, 0, 12)
+ 
+    local statusL = label(row, "Inactive", 11, Color3.fromRGB(140, 100, 105), Enum.Font.Gotham)
+    statusL.Size = UDim2.new(1, -120, 0, 16)
+    statusL.Position = UDim2.new(0, 62, 0, 34)
+ 
+    -- Red-style toggle
+    local togBg = Instance.new("Frame")
+    togBg.Size = UDim2.new(0, 48, 0, 26)
+    togBg.Position = UDim2.new(1, -58, 0.5, -13)
+    togBg.BackgroundColor3 = Color3.fromRGB(120, 40, 55)
+    togBg.BorderSizePixel = 0
+    togBg.Parent = row
+    corner(togBg, 13)
+ 
+    local knob = Instance.new("Frame")
+    knob.Size = UDim2.new(0, 22, 0, 22)
+    knob.Position = UDim2.new(0, 2, 0.5, -11)
+    knob.BackgroundColor3 = Color3.fromRGB(220, 100, 120)
+    knob.BorderSizePixel = 0
+    knob.Parent = togBg
+    corner(knob, 11)
+ 
+    local togBtn = Instance.new("TextButton")
+    togBtn.Size = UDim2.new(1, 0, 1, 0)
+    togBtn.BackgroundTransparency = 1
+    togBtn.Text = ""
+    togBtn.Parent = togBg
+ 
+    local idx = i
+    togBtn.MouseButton1Click:Connect(function()
+        tfStates[idx] = not tfStates[idx]
+        local on = tfStates[idx]
+        TweenService:Create(togBg, TweenInfo.new(0.15), {
+            BackgroundColor3 = on and Color3.fromRGB(180, 40, 60) or Color3.fromRGB(120, 40, 55)
+        }):Play()
+        TweenService:Create(knob, TweenInfo.new(0.15), {
+            Position = on and UDim2.new(0, 24, 0.5, -11) or UDim2.new(0, 2, 0.5, -11),
+            BackgroundColor3 = on and Color3.fromRGB(255, 160, 170) or Color3.fromRGB(220, 100, 120)
+        }):Play()
+        statusL.Text = on and "Active" or "Inactive"
+        statusL.TextColor3 = on and Color3.fromRGB(220, 80, 100) or Color3.fromRGB(140, 100, 105)
+    end)
+end
+ 
+-- Version label
+local tfVersion = label(tfFrame, "Version 1.0", 11, Color3.fromRGB(100, 60, 65), Enum.Font.Gotham)
+tfVersion.Size = UDim2.new(1, 0, 0, 18)
+tfVersion.Position = UDim2.new(0, 0, 1, -22)
+tfVersion.TextXAlignment = Enum.TextXAlignment.Center
+ 
 -- Wire up launcher open buttons
 local launcherBtnList = launcherFrame:FindFirstChild("Frame", true)
 local idx = 0
@@ -773,7 +910,7 @@ for _, child in ipairs(launcherFrame:GetChildren()) do
         end
     end
 end
-
+ 
 -- Re-wire open buttons properly
 do
     local buttons = {}
@@ -798,5 +935,7 @@ do
         end
     end
 end
-
+ 
+print("[ScriptHub] Loaded successfully!")
+ 
 print("[ScriptHub] Loaded successfully!")
